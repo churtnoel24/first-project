@@ -7,6 +7,9 @@ import Users from './components/Users';
 import Home from './pages/Home'
 import About from './pages/About'
 import AboutDetails from './pages/AboutDetails'
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { ProtectedRoutes, PublicRoutes } from './ProtectedRoutes';
 
 function App() {
 
@@ -28,9 +31,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<Home />} />
-        <Route path="/about" element={<About cardItems={cardItems} />} />
-        <Route path="/about/:id" element={<AboutDetails cardItems={cardItems} />} />
+
+        <Route element={<ProtectedRoutes />}>
+          <Route index element={<Home />} />
+          <Route path="/about" element={<About cardItems={cardItems} />} />
+          <Route path="/about/:id" element={<AboutDetails cardItems={cardItems} />} />
+        </Route>
+
+
+        <Route element={<PublicRoutes />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+        
       </Routes>
     </BrowserRouter>
   );
