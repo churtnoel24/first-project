@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from 'axios';
 import { Link, useNavigate } from "react-router-dom";
+import Button from "../components/Button";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -21,7 +22,7 @@ function Login() {
       );
 
       if (response.data.success) {
-        localStorage.setItem("auth", "true"); //store login state //in real world scenario this is not secure.
+        localStorage.setItem("username", response.data.username); //store login state //in real world scenario this is not secure.
         navigate("/") //navigate to homepage
       } else {
         alert(response.data.message);
@@ -46,7 +47,7 @@ function Login() {
           <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="form-control" />
           <label className="form-label">Password</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="form-control" />
-          <button type="submit" className="btn btn-primary mt-2">Login</button>
+          <Button variant="primary" label="Login" />
         </form>
 
         <p> Don't have an account yet? <Link to="/register">Register</Link> </p>

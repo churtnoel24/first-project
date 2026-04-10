@@ -1,7 +1,7 @@
-function Button({text, color, onclick}){
+function Button({label, variant, onClick, icon}){
 
     return (
-        <button className={`btn btn-${color}`} onClick={onclick}>{text}</button>
+        <button className={`btn btn-${variant} mt-2`} onClick={onClick}>{icon && icon} {label}</button>
     );
 }
 
