@@ -2,21 +2,38 @@ import { useState } from "react";
 import axios from 'axios';
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import FormInput from "../components/FormInput";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({});
+
   const navigate = useNavigate();
 
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.email.includes("@")) newErrors.email = "Enter a valid email.";
+    if (form.password.length < 6) newErrors.password = "Password too short.";
+    return newErrors;
+  };
+
+
   const handleSubmit = async (e) => {
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+
     e.preventDefault();
 
     try {
       const response = await axios.post(
         "http://localhost/api/login.php",
         {
-          email,
-          password
+          email: form.email,
+          password: form.password
         },
         { header: { "Cotent-Type": "application/json" } }
       );
@@ -39,20 +56,17 @@ function Login() {
 
   };
 
-  return (
-    <div className="d-flex align-items-center vh-100">
-      <div className="form-control w-25 mx-auto">
-        <form onSubmit={handleSubmit}>
-          <label className="form-label">Email</label>
-          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="form-control" />
-          <label className="form-label">Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="form-control" />
-          <Button variant="primary" label="Login" />
-        </form>
 
-        <p> Don't have an account yet? <Link to="/register">Register</Link> </p>
-      </div>
+  return (
+    <div style={{ maxWidth: "400px", margin: "40px auto" }}>
+      <h2>Login</h2>
+      <FormInput label="Email" type="email" name="email"
+        value={form.email} onChange={(handleChange)} error={errors.email} required />
+      <FormInput label="Password" type="password" name="password"
+        value={form.password} onChange={handleChange} error={errors.password} required />
+      <Button label="Login" variant="primary" onClick={handleSubmit} />
     </div>
+
   );
 }
 

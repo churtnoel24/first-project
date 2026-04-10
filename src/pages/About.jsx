@@ -1,11 +1,10 @@
 import { Link } from 'react-router-dom'
+import Navbar from '../components/Navbar';
 
 function About({ cardItems }) {
     return (
         <>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-            <h1>Hello from the About Page</h1>
+            <Navbar user="Churt" />
 
             {cardItems.map((item) => {
                 return <div className="card" style={{ width: '18rem' }} key={item.id}>

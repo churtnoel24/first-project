@@ -1,23 +1,27 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { useState } from 'react';
+import Modal from '../components/Modal';
+import Button from '../components/Button';
+import Navbar from '../components/Navbar';
+import FormInput from '../components/FormInput'
+import { formatDate } from '../utils/formatDate'
 
 function Home() {
 
-    const navigate = useNavigate();
+    const [modal, SetModal] = useState(false);
+    const [password, SetPassword] = useState('');
 
-    function logout(){
-        localStorage.removeItem("username");
-        navigate('/login');
-    }
-
-
+    const loggedDate = "4/10/2026";
     return (
         <>
-            <nav>
-                <Link to="/">Home</Link>
-                <Link to="/about">About</Link>
-            </nav>
-            <h1>Hello from the Home Page</h1>
-            <button onClick={logout} className='btn btn-danger'>LOGOUT</button>
+            <Navbar user="Churt" />
+            {formatDate(loggedDate)}
+            <Button label="Open Modal" variant="primary" onClick={() => { SetModal(true) }} />
+            <Modal isOpen={modal} title="Test Modal" onClose={() => SetModal(false)}
+                onConfirm={() => SetModal(false)}>
+                <FormInput label="Password" type="password" name="password" value={password} onChange={(e)=>SetPassword(e.target.value)} 
+                    placeholder="Password"/>
+            </Modal>
         </>
     );
 }
