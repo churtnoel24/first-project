@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import FormInput from "../components/FormInput";
+import { API_BASE } from "../utils/api";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -30,7 +31,7 @@ function Login() {
 
     try {
       const response = await axios.post(
-        "http://localhost/api/login.php",
+        `${API_BASE}/login.php`,
         {
           email: form.email,
           password: form.password

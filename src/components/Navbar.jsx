@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import { LogOut } from 'lucide-react';
 
-function Navbar({ user }) {
+function Navbar({ user, onClick = null }) {
 
     const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ function Navbar({ user }) {
                 color: "#fff", fontWeight: "bold", fontSize: "20px",
                 textDecoration: "none"
             }}>
-                BSCS 3A
+                Student Portal
             </Link>
 
             {/* Dynamic navigation links */}
@@ -53,7 +53,7 @@ function Navbar({ user }) {
                 </span>
                 <Button label="Logout" variant="warning"
                     icon={<LogOut size={15} />}
-                    onClick={logout} />
+                    onClick={onClick ? onClick : logout} />
             </div>
         </nav>
     );

@@ -10,7 +10,7 @@ import AboutDetails from './pages/AboutDetails'
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { ProtectedRoutes, PublicRoutes } from './ProtectedRoutes';
-// import HomePage from './pages/HomePage';
+import HomePage from './pages/HomePage';
 
 function App() {
 
@@ -35,7 +35,7 @@ function App() {
 
         <Route element={<ProtectedRoutes />}>
           <Route index element={<Home />} />
-          {/* <Route path="/students" element={<HomePage />} /> */}
+          <Route path="/students" element={<HomePage />} />
           <Route path="/about" element={<About cardItems={cardItems} />} />
           <Route path="/about/:id" element={<AboutDetails cardItems={cardItems} />} />
         </Route>

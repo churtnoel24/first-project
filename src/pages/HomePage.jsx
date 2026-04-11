@@ -1,4 +1,3 @@
-// src/pages/HomePage.jsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Pencil, Trash2, UserPlus, LogOut, X } from 'lucide-react';
@@ -16,7 +15,7 @@ const BLOCKS = ["A", "B", "C", "D"];
 
 const EMPTY_FORM = {
     student_id: "", name: "", course: "", year: "", block: "", customBlock: "",
-};
+}
 
 function StudentForm({
     isAdd,
@@ -224,33 +223,35 @@ function StudentForm({
             </div>
 
         </div>
+
+
     );
 }
 
 function HomePage() {
     const navigate = useNavigate();
 
-    // Data
+    //Data
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Modals
+    //Modals
     const [showAdd, setShowAdd] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [showLogout, setShowLogout] = useState(false);
 
-    // Form state
+    //form
     const [form, setForm] = useState(EMPTY_FORM);
     const [errors, setErrors] = useState({});
-    const [selected, setSelected] = useState(null); // student being edited/deleted
+    const [selected, setSelected] = useState(null); // student being edited/deleted 
 
-    // Feedback
+    //feedback
     const [message, setMessage] = useState("");
-    // ── Load students on mount ──────────────────────────────────────
+
     useEffect(() => {
         fetchStudents();
-        // Check login — if no user in localStorage, redirect to login
+
         const user = localStorage.getItem("username");
         if (!user) navigate("/login");
     }, [navigate]);
@@ -262,13 +263,13 @@ function HomePage() {
             const json = await res.json();
             if (json.success) setStudents(json.data);
         } catch (err) {
-            setMessage(`Failed to load students. Is DB running? ${err}`);
+            setMessage(`Failed to load students. Is server running? ${err}`);
         } finally {
             setLoading(false);
         }
-    };
+    }
 
-    // ── Form helpers ────────────────────────────────────────────────
+    //form helpers
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
@@ -294,7 +295,8 @@ function HomePage() {
             errs.block = "Block must be capital letters only (max 5 chars).";
         return errs;
     };
-    // ── ADD ─────────────────────────────────────────────────────────
+
+    //ADD
     const handleAdd = async () => {
         const errs = validate(true);
         if (Object.keys(errs).length) { setErrors(errs); return; }
@@ -304,7 +306,7 @@ function HomePage() {
 
         const res = await fetch(`${API_BASE}/students.php`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            header: { "Content-Type": "application/json" },
             body: JSON.stringify(body),
         });
         const json = await res.json();
@@ -385,7 +387,7 @@ function HomePage() {
         }}>
 
             {/* ── Navbar ── */}
-            <Navbar user={username} onClick={() => setShowLogout(true)}/>
+            <Navbar user={username} onClick={() => setShowLogout(true)} />
 
             {/* ── Main Content ── */}
             <main style={{ padding: "28px" }}>
@@ -570,3 +572,7 @@ function HomePage() {
 }            // end HomePage
 
 export default HomePage;
+
+
+
+
