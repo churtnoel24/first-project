@@ -249,6 +249,8 @@ function HomePage() {
     //feedback
     const [message, setMessage] = useState("");
 
+    const API = `${API_BASE}/students.php`;
+
     useEffect(() => {
         fetchStudents();
 
@@ -259,7 +261,7 @@ function HomePage() {
     const fetchStudents = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/students.php`);
+            const res = await fetch(API);
             const json = await res.json();
             if (json.success) setStudents(json.data);
         } catch (err) {
@@ -304,7 +306,7 @@ function HomePage() {
         const body = { ...form, block: resolveBlock() };
         delete body.customBlock;
 
-        const res = await fetch(`${API_BASE}/students.php`, {
+        const res = await fetch(API, {
             method: "POST",
             header: { "Content-Type": "application/json" },
             body: JSON.stringify(body),
@@ -339,7 +341,7 @@ function HomePage() {
         const errs = validate(false);
         if (Object.keys(errs).length) { setErrors(errs); return; }
 
-        const res = await fetch(`${API_BASE}/students.php`, {
+        const res = await fetch(API, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -358,7 +360,7 @@ function HomePage() {
     const openDelete = (student) => { setSelected(student); setShowDelete(true); };
 
     const handleDelete = async () => {
-        const res = await fetch(`${API_BASE}/students.php`, {
+        const res = await fetch(API, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: selected.id }),
