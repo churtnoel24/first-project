@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-// import { useState } from 'react'
+import { lazy, Suspense } from 'react'
 import './App.css'
 import Button from './components/Button';
 import Card from './components/Card';
@@ -7,10 +7,29 @@ import Users from './components/Users';
 import Home from './pages/Home'
 import About from './pages/About'
 import AboutDetails from './pages/AboutDetails'
-import Login from './pages/Login';
+
 import Register from './pages/Register';
 import { ProtectedRoutes, PublicRoutes } from './ProtectedRoutes';
-import HomePage from './pages/HomePage';
+//import HomePage from './pages/HomePage';
+//import Login from './pages/Login';
+
+const Login = lazy(() => import('./pages/Login')); 
+const HomePage = lazy(() => import('./pages/HomePage'));
+
+function PageLoader() {
+  return (
+    <div style={{
+      display: "flex", justifyContent: "center",
+      alignItems: "center", minHeight: "100vh",
+      backgroundColor: "#F0F7F1",
+    }}>
+      <p style={{ color: "#1A5C2A", fontSize: "18px", fontWeight: "bold" }}>
+        Loading...
+      </p>
+    </div>
+  );
+}
+
 
 function App() {
 
@@ -31,8 +50,8 @@ function App() {
 
   return (
     <BrowserRouter>
+    <Suspense fallback={<PageLoader />}>
       <Routes>
-
         <Route element={<ProtectedRoutes />}>
           <Route index element={<Home />} />
           <Route path="/students" element={<HomePage />} />
@@ -45,8 +64,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>
-        
       </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

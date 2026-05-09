@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useMemo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Pencil, Trash2, UserPlus, LogOut, X } from 'lucide-react';
 import { FaSave, FaUserGraduate } from 'react-icons/fa';
@@ -8,6 +8,7 @@ import Modal from '../components/Modal';
 import FormInput from '../components/FormInput';
 import { API_BASE } from '../utils/api';
 import Navbar from '../components/Navbar';
+import useDebounce from '../hooks/useDebounce';
 
 const COURSES = ["BSIT", "BSCS", "BSCS-EMC DAT", "BSEMC-GD"];
 const YEARS = [1, 2, 3, 4];
@@ -233,6 +234,43 @@ function HomePage() {
 
     //Data
     const [students, setStudents] = useState([]);
+    const [search, setSearch] = useState("");
+
+    // Only updates 400ms AFTER the user stops typing
+    const debouncedSearch = useDebounce(search, 400);
+
+    // This useEffect fires only when debouncedSearch changes
+    // NOT on every keystroke — only 400ms after the user stops
+    useEffect(() => {
+        if (debouncedSearch.trim() === "") {
+            fetchStudents();      // no search — load all
+        } else {
+            fetchStudents(debouncedSearch); // search query
+        }
+    }, [debouncedSearch]);
+
+
+    // ✅ useMemo — filtered list only recomputed when students or search changes
+    const filteredStudents = useMemo(() => {
+        if (!search.trim()) return students;
+        return students.filter(s =>
+            s.name.toLowerCase().includes(search.toLowerCase()) ||
+            s.student_id.includes(search) ||
+            s.course.toLowerCase().includes(search.toLowerCase())
+        );
+    }, [students, search]);
+    // Without useMemo: filter runs on EVERY render (modal open, message show, etc.)
+    // With useMemo: filter runs ONLY when students array or search text changes.
+
+    // ✅ useMemo — course summary recalculated only when student list changes
+    const courseSummary = useMemo(() => {
+        return students.reduce((acc, s) => {
+            acc[s.course] = (acc[s.course] || 0) + 1;
+            return acc;
+        }, {});
+        // Returns: { BSCS: 12, BSIT: 8, "BSCS-EMC DAT": 5, "BSEMC-GD": 3 }
+    }, [students]);
+
     const [loading, setLoading] = useState(true);
 
     //Modals
@@ -251,14 +289,7 @@ function HomePage() {
 
     const API = `${API_BASE}/students.php`;
 
-    useEffect(() => {
-        fetchStudents();
-
-        const user = localStorage.getItem("username");
-        if (!user) navigate("/login");
-    }, [navigate]);
-
-    const fetchStudents = async () => {
+    const fetchStudents = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch(API);
@@ -269,7 +300,14 @@ function HomePage() {
         } finally {
             setLoading(false);
         }
-    }
+    }, [API]);
+
+    useEffect(() => {
+        fetchStudents();
+
+        const user = localStorage.getItem("username");
+        if (!user) navigate("/login");
+    }, [navigate, fetchStudents]);
 
     //form helpers
     const handleChange = (e) => {
@@ -420,6 +458,20 @@ function HomePage() {
                             setShowAdd(true);
                         }} />
                 </div>
+                {/* Search box */}
+                <input
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    placeholder="Search by name, ID, or course..."
+                />
+
+                {/* Course summary badges */}
+                <div>
+                    {Object.entries(courseSummary).map(([course, count]) => (
+                        <span key={course}>{course}: {count}</span>
+                    ))}
+                </div>
+
 
                 {/* ── Students Table ── */}
                 {loading ? <p>Loading students...</p> : (
@@ -448,7 +500,7 @@ function HomePage() {
                                     }}>
                                         No students found. Click "Add Student" to get started.
                                     </td></tr>
-                                ) : students.map((s, i) => (
+                                ) : filteredStudents.map((s, i) => (
                                     <tr key={s.id}
                                         style={{
                                             backgroundColor: i % 2 === 0 ? "#fff" : "#EBF5FB",
